@@ -135,10 +135,20 @@
         if(y > containerDim.height -20 || y < 0) {
             ballDir[1] *= -1
         }
+        if(isCollide(ball,paddle)){
+            var nDir = ((x - paddle.offsetLeft ) - (paddle.offsetWidth / 2 )  ) / 10
+            ballDir[0] = nDir
+            ballDir[1] *= -1
+        }
         x += ballDir[0]
         y += ballDir[1]
         ball.style.top = y + "px"
         ball.style.left = x + "px"
+    }
+    function isCollide(a,b) {
+        var aRect = a.getBoundingClientRect()
+        var bRect = b.getBoundingClientRect()
+        return (!(aRect.bottom < bRect.top || aRect.top > aRect.bottom || aRect.right < bRect.left || aRect.left > bRect.right ))
     }
 </script>
 </html>
