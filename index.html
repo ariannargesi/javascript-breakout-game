@@ -5,14 +5,140 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>BreakOut Game</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Javascript Breakout game</title>
 </head>
+<style>
+    .startBtn {
+        display: inline-block;
+        background: red;
+        font-size: 2rem;
+        color: white
+    }
+    .score,lives {
+        font-size: 3em;
+    }
+    .container {
+        height: 600px;
+        width: 80%;
+        margin-left: 10%;
+        overflow: hidden;
+        border: 1px solid black;
+        background: black;
+        position: relative;
+    }
+    #ball {
+        position: absolute;
+        background: white;
+        height: 20px;
+        width: 20px;
+        top: 50%;
+        left: 50%;
+        border-radius: 25px;
+        display: none;
+    }
+    .paddle {
+        position: absolute;
+        height: 20px;
+        width: 150px;
+        background: white;
+        left: 50%;
+        bottom: 30px;
+        border-radius: 25px;
+    }
+    .gameover {
+        position: absolute;
+        text-align: center;
+        color: white;
+        margin: 0 auto;
+        font-size: 3em;
+        width: 100%;
+        line-height: 300px;
+    }
+</style>
 <body>
-    <div id="startBtn">Start Game</div> Score: <span class="score">0</span> Lives <span class="lives">0</span></body>
+    <div>
+        <div class="startBtn">Start Game</div>
+        Score: <span class="score">0</span>
+        Lives: <span class="lives">0</span>
+    </div>
     <div class="container">
         <div id="ball"></div>
-        <div id="paddle"></div>
-        <div id="gameover">Click Start Button</div>
+        <div class="paddle"></div>
+        <div class="gameover">Click Start Button</div>
     </div>
+
+</body>
+<script>
+    var container = document.querySelector(".container")
+    var ball = document.querySelector("#ball")
+    var paddle = document.querySelector(".paddle")
+    var btn_start = document.querySelector(".startBtn")
+
+    var gameOver = false
+    var gameInPlay = true
+    var score = 0
+    var lives = 5
+    var animationRepeat
+    var ballDir = [5,5,5]
+    var containerDim = container.getBoundingClientRect()
+
+    btn_start.addEventListener("click", startGame)
+    document.addEventListener("keydown", (e) => {
+        var key = e.keyCode
+        e.preventDefault()
+        if(key === 37) paddle.left = true
+        else if (key === 39) paddle.right = true
+    })
+    document.addEventListener("keyup", (e) => {
+        var key = e.keyCode
+        e.preventDefault()
+        if(key === 37) paddle.left = false
+        else if (key === 39) paddle.right = false
+    })
+
+    function startGame () {
+        document.querySelector(".gameover").style.display = "none"
+        ball.style.display = "block"
+        gameOver = false
+        gameInPlay = true
+        animationRepeat = requestAnimationFrame(update)
+    }
+    function update() {
+        if(gameOver  === false ){
+            var pCurrent = paddle.offsetLeft
+            if(paddle.left && pCurrent > 0) {
+                pCurrent -= 5
+            }
+            else if (paddle.right && pCurrent < (containerDim.width - paddle.offsetWidth)  ) {
+                pCurrent += 5
+            }
+            paddle.style.left = pCurrent + "px"
+            if(!gameInPlay){
+                waitingOnPaddle()
+            } else {
+                ballMove()
+            }
+            animationRepeat = requestAnimationFrame(update)
+        }
+
+    }
+    function waitingOnPaddle () {
+        ball.style.top = (paddle.offsetTop - 22) + "px"
+        ball.style.left = (paddle.offsetLeft + 70) + "px"
+    }
+    function ballMove() {
+        var x = ball.offsetLeft
+        var y = ball.offsetTop
+        if(x > containerDim.width -20 || x< 0){
+            ballDir[0] *= -1
+        }
+        if(y > containerDim.height -20 || y < 0) {
+            ballDir[1] *= -1
+        }
+        x += ballDir[0]
+        y += ballDir[1]
+        ball.style.top = y + "px"
+        ball.style.left = x + "px"
+    }
+</script>
 </html>
